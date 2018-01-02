@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <OpenGLES/EAGL.h>
 
 @interface ViewController : UIViewController
-
-
+{
+    EAGLContext *context;
+}
 @end
 
