@@ -11,27 +11,14 @@
 
 #include <stdio.h>
 
-typedef struct
-{
-    void ( *Init			)( int width, int height );
-    void ( *Draw			)( void );
-    void ( *ToucheBegan	    )( float x, float y, unsigned int tap_count );
-    void ( *ToucheMoved	    )( float x, float y, unsigned int tap_count );
-    void ( *ToucheEnded	    )( float x, float y, unsigned int tap_count );
-    void ( *Accelerometer   )( float x, float y, float z );
-    
-} GAMEDELEGATE;
-
-extern  GAMEDELEGATE templateApp;
-
 class GameApp
 {
 public:
-    virtual void appInit( int width, int height ) = 0;
+    void appInit( int width, int height );
     
-    virtual void appRender( void ) = 0;
+    void appRender( void );
     
-    virtual void appExit( void ) = 0;
+    void appExit( void );
     
     void appToucheBegan( float x, float y, unsigned int tap_count );
     
@@ -39,7 +26,9 @@ public:
     
     void appToucheEnded( float x, float y, unsigned int tap_count );
     
-    void appToucheCancelled( float x, float y, unsigned int tap_count );
+    static GameApp* getAppInstance();
+private:
+    static GameApp* _appInstance;
 };
 
 #endif /* GameApp_h */

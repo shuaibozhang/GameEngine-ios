@@ -206,12 +206,9 @@ as being the original software.
 	{
 		pos = [ touch locationInView:self ];
 		
-		if( templateApp.ToucheBegan )
-		{
-			templateApp.ToucheBegan( pos.x,
-									 pos.y,
-									 [ [ touches anyObject ] tapCount ] );
-		}
+        GameApp::getAppInstance()->appToucheBegan(pos.x,
+                                                  pos.y,
+                                                  [ [ touches anyObject ] tapCount ] );
 	}
 }
 
@@ -224,12 +221,9 @@ as being the original software.
 	{
 		pos = [ touch locationInView:self ];
 		
-		if( templateApp.ToucheMoved )
-		{
-			templateApp.ToucheMoved( pos.x,
-									 pos.y,
-									 [ [ touches anyObject ] tapCount ] );
-		}
+        GameApp::getAppInstance()->appToucheMoved(pos.x,
+                                                  pos.y,
+                                                  [ [ touches anyObject ] tapCount ] );
 	}
 }
 
@@ -242,12 +236,9 @@ as being the original software.
 	{
 		pos = [ touch locationInView:self ];
 		
-		if( templateApp.ToucheEnded )
-		{
-			templateApp.ToucheEnded( pos.x,
-									 pos.y,
-									 [ [ touches anyObject ] tapCount ] );
-		}
+        GameApp::getAppInstance()->appToucheEnded(pos.x,
+                                                  pos.y,
+                                                  [ [ touches anyObject ] tapCount ] );
 	}	
 }
 
