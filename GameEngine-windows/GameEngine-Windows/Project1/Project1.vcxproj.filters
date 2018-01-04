@@ -25,6 +25,12 @@
     <Filter Include="源文件\platform\glad">
       <UniqueIdentifier>{f99a97db-f198-4dec-96de-b28772879e3f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Commond">
+      <UniqueIdentifier>{f4d8add8-0877-4354-9c89-d31c27001717}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Commond">
+      <UniqueIdentifier>{a39b77c9-309d-4520-bab1-df56098fdf1e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -33,6 +39,15 @@
     <ClCompile Include="..\..\..\Class\platform\desktop\glad\src\glad.c">
       <Filter>源文件\platform\glad</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Class\GameApp.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Class\commond\Shader.cpp">
+      <Filter>源文件\Commond</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Class\commond\Mesh.cpp">
+      <Filter>源文件\Commond</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Class\platform\desktop\glad\include\glad\glad.h">
@@ -40,6 +55,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Class\platform\desktop\glad\include\KHR\khrplatform.h">
       <Filter>头文件\platform\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Class\GameApp.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Class\commond\Shader.h">
+      <Filter>头文件\Commond</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Class\GLDefinds.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Class\commond\Mesh.h">
+      <Filter>头文件\Commond</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

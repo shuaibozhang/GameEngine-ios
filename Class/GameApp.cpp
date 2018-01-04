@@ -7,8 +7,14 @@
 //
 
 #include "GameApp.h"
+#include"GLDefinds.h"
+#include"commond\Mesh.h"
+#include"commond\Shader.h"
 
 GameApp* GameApp::_appInstance = nullptr;
+
+ShaderData shader;
+MeshData mesh;
 
 GameApp* GameApp::getAppInstance()
 {
@@ -22,12 +28,29 @@ GameApp* GameApp::getAppInstance()
 
 void GameApp::appInit(int width, int height)
 {
+	float vertices[] = {
+		0.5f, 0.5f, 0.0f,   // 右上角
+		0.5f, -0.5f, 0.0f,  // 右下角
+		-0.5f, -0.5f, 0.0f, // 左下角
+		-0.5f, 0.5f, 0.0f   // 左上角
+	};
 
+	int indices[] = { // 注意索引从0开始! 
+		0, 1, 3, // 第一个三角形
+		1, 2, 3  // 第二个三角形
+	};
+
+	Shader_Create_Default(shader);
+	mesh = Mesh_Load(vertices, sizeof(vertices), indices, sizeof(indices));
 }
 
 void GameApp::appRender()
 {
-    
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glUseProgram(shader.shaderProgram);
+	Mesh_Draw(mesh);
 }
 
 void GameApp::appExit()

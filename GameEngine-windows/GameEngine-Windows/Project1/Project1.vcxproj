@@ -72,7 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>C:\Users\Administrator\Documents\GitHub\GameEngine-ios\Class\platform\desktop\glfw-3.2.1\include;C:\Users\Administrator\Documents\GitHub\GameEngine-ios\Class\platform\desktop\glad\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Administrator\Documents\GitHub\GameEngine-ios\Class;C:\Users\Administrator\Documents\GitHub\GameEngine-ios\Class\platform\desktop\glfw-3.2.1\include;C:\Users\Administrator\Documents\GitHub\GameEngine-ios\Class\platform\desktop\glad\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\Administrator\Documents\GitHub\GameEngine-ios\Class\platform\desktop\glfw-3.2.1\lib-vc2015;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -80,6 +80,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>IS_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -119,10 +120,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Class\commond\Mesh.cpp" />
+    <ClCompile Include="..\..\..\Class\commond\Shader.cpp" />
+    <ClCompile Include="..\..\..\Class\GameApp.cpp" />
     <ClCompile Include="..\..\..\Class\platform\desktop\glad\src\glad.c" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Class\commond\Mesh.h" />
+    <ClInclude Include="..\..\..\Class\commond\Shader.h" />
+    <ClInclude Include="..\..\..\Class\GameApp.h" />
+    <ClInclude Include="..\..\..\Class\GLDefinds.h" />
     <ClInclude Include="..\..\..\Class\platform\desktop\glad\include\glad\glad.h" />
     <ClInclude Include="..\..\..\Class\platform\desktop\glad\include\KHR\khrplatform.h" />
   </ItemGroup>
