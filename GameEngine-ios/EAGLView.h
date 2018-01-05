@@ -1,35 +1,20 @@
 //
-//  EAGLView.h
-//  template
+//  OpenGLView.h
+//  Tutorial01
 //
-//  Created by rom on 4/6/11.
-//  Copyright 2011 SIO2 Interactive. All rights reserved.
+//  Created by  on 12-11-24.
+//  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
+#import <QuartzCore/QuartzCore.h>
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
 
-#import <OpenGLES/ES2/gl.h>
-#import <OpenGLES/ES2/glext.h>
-
-// This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
-// The view content is basically an EAGL surface you render your OpenGL scene into.
-// Note that setting the view non-opaque will only work if the EAGL surface has an alpha channel.
-@interface EAGLView : UIView
-{
-@private
-    EAGLContext *context;
-    
-    // The pixel dimensions of the CAEAGLLayer.
-    GLint framebufferWidth;
-    GLint framebufferHeight;
-    
-    // The OpenGL ES names for the framebuffer and renderbuffer used to render to this view.
-    GLuint defaultFramebuffer, colorRenderbuffer, depthRenderbuffer;
+@interface EAGLView : UIView {
+    CAEAGLLayer* _eaglLayer;
+    EAGLContext* _context;
+    GLuint _colorRenderBuffer;
+    GLuint _frameBuffer;
 }
-
-@property (nonatomic, retain) EAGLContext *context;
-
-- (void)setFramebuffer;
-- (BOOL)presentFramebuffer;
-
 @end

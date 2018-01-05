@@ -8,8 +8,8 @@
 
 #include "GameApp.h"
 #include"GLDefinds.h"
-#include"commond\Mesh.h"
-#include"commond\Shader.h"
+#include"commond/Mesh.h"
+#include"commond/Shader.h"
 
 GameApp* GameApp::_appInstance = nullptr;
 
@@ -46,7 +46,7 @@ void GameApp::appInit(int width, int height)
 
 void GameApp::appRender()
 {
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.0f, 1.0f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glUseProgram(shader.shaderProgram);

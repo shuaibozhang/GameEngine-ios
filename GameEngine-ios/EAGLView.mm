@@ -1,246 +1,118 @@
-/*
-
-Book:      	Game and Graphics Programming for iOS and Android with OpenGL(R) ES 2.0
-Author:    	Romain Marucchi-Foino
-ISBN-10: 	1119975913
-ISBN-13: 	978-1119975915
-Publisher: 	John Wiley & Sons	
-
-Copyright (C) 2011 Romain Marucchi-Foino
-
-This software is provided 'as-is', without any express or implied warranty.
-In no event will the authors be held liable for any damages arising from the use of
-this software. Permission is granted to anyone who either own or purchase a copy of
-the book specified above, to use this software for any purpose, including commercial
-applications subject to the following restrictions:
-
-1. The origin of this software must not be misrepresented; you must not claim that
-you wrote the original software. If you use this software in a product, an acknowledgment
-in the product would be appreciated but is not required.
-
-2. Altered source versions must be plainly marked as such, and must not be misrepresented
-as being the original software.
-
-3. This notice may not be removed or altered from any source distribution.
-
-*/
-
-
-#import <QuartzCore/QuartzCore.h>
+//
+//  OpenGLView.m
+//  Tutorial01
+//
+//  Created by  on 12-11-24.
+//  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
+//
 
 #import "EAGLView.h"
-
 #include "GameApp.h"
+// 使用匿名 category 来声明私有成员
+@interface EAGLView()
 
-@interface EAGLView (PrivateMethods)
-- (void)createFramebuffer;
-- (void)deleteFramebuffer;
+- (void)setupLayer;
+- (void)setupContext;
+- (void)setupRenderBuffer;
+- (void)destoryRenderAndFrameBuffer;
+- (void)render;
+
 @end
 
 @implementation EAGLView
 
-@dynamic context;
-
-// You must implement this method
-+ (Class)layerClass
-{
++ (Class)layerClass {
+    // 只有 [CAEAGLLayer class] 类型的 layer 才支持在其上描绘 OpenGL 内容。
     return [CAEAGLLayer class];
 }
 
-//The EAGL view is stored in the nib file. When it's unarchived it's sent -initWithCoder:.
-- (id)initWithCoder:(NSCoder*)coder
+- (void)setupLayer
 {
-    self = [super initWithCoder:coder];
-	if (self)
-    {
-        CAEAGLLayer *eaglLayer = (CAEAGLLayer *)self.layer;
-        
-		// kEAGLColorFormatRGBA8
-		// kEAGLColorFormatRGB565
-        eaglLayer.opaque = TRUE;
-        eaglLayer.drawableProperties = [ NSDictionary dictionaryWithObjectsAndKeys:
-                                       [ NSNumber numberWithBool:FALSE ],
-									     kEAGLDrawablePropertyRetainedBacking,
-                                         kEAGLColorFormatRGB565,
-										 kEAGLDrawablePropertyColorFormat,
-										 nil ];
+    _eaglLayer = (CAEAGLLayer*) self.layer;
+    
+    // CALayer 默认是透明的，必须将它设为不透明才能让其可见
+    _eaglLayer.opaque = YES;
+    
+    // 设置描绘属性，在这里设置不维持渲染内容以及颜色格式为 RGBA8
+    _eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
+                                     [NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
+}
 
-		// Enable multitouch
-		[ self setMultipleTouchEnabled:YES ];
+- (void)setupContext {
+    // 指定 OpenGL 渲染 API 的版本，在这里我们使用 OpenGL ES 2.0
+    EAGLRenderingAPI api = kEAGLRenderingAPIOpenGLES2;
+    _context = [[EAGLContext alloc] initWithAPI:api];
+    if (!_context) {
+        NSLog(@"Failed to initialize OpenGLES 2.0 context");
+        exit(1);
     }
+    
+    // 设置为当前上下文
+    if (![EAGLContext setCurrentContext:_context]) {
+        _context = nil;
+        
+        NSLog(@"Failed to set current OpenGL context");
+        exit(1);
+    }
+}
 
+- (void)setupRenderBuffer {
+    glGenRenderbuffers(1, &_colorRenderBuffer);
+    // 设置为当前 renderbuffer
+    glBindRenderbuffer(GL_RENDERBUFFER, _colorRenderBuffer);
+    // 为 color renderbuffer 分配存储空间
+    [_context renderbufferStorage:GL_RENDERBUFFER fromDrawable:_eaglLayer];
+}
+
+- (void)setupFrameBuffer {
+    glGenFramebuffers(1, &_frameBuffer);
+    // 设置为当前 framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, _frameBuffer);
+    // 将 _colorRenderBuffer 装配到 GL_COLOR_ATTACHMENT0 这个装配点上
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                              GL_RENDERBUFFER, _colorRenderBuffer);
+}
+
+- (void)destoryRenderAndFrameBuffer
+{
+    glDeleteFramebuffers(1, &_frameBuffer);
+    _frameBuffer = 0;
+    glDeleteRenderbuffers(1, &_colorRenderBuffer);
+    _colorRenderBuffer = 0;
+}
+
+- (void)render {
+    [_context presentRenderbuffer:GL_RENDERBUFFER];
+}
+
+- (id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        [self setupLayer];
+        [self setupContext];
+    }
     return self;
 }
 
-- (void)dealloc
-{
-    [self deleteFramebuffer];    
-    [context release];
+- (void)layoutSubviews {
+    [EAGLContext setCurrentContext:_context];
     
-    [super dealloc];
-}
-
-- (EAGLContext *)context
-{
-    return context;
-}
-
-- (void)setContext:(EAGLContext *)newContext
-{
-    if (context != newContext)
-    {
-        [self deleteFramebuffer];
-        
-        [context release];
-        context = [newContext retain];
-        
-        [EAGLContext setCurrentContext:nil];
-    }
-}
-
-- (void)createFramebuffer
-{
-    if (context && !defaultFramebuffer )
-    {
-        [EAGLContext setCurrentContext:context];
-        
-        // Create default framebuffer object.
-        glGenFramebuffers(1, &defaultFramebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
-        
-        // Create color render buffer and allocate backing store.
-        glGenRenderbuffers(1, &colorRenderbuffer);
-        glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
-        
-		[context renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)self.layer];
-        
-		glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &framebufferWidth);
-        glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &framebufferHeight);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
-        
-		
-		glGenRenderbuffers(1, &depthRenderbuffer);
-		glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
-		
-		// GL_DEPTH24_STENCIL8_OES: Set a depth buffer and a stencil buffer.
-		// GL_DEPTH_COMPONENT16: Set a 16bits depth buffer.
-		// GL_DEPTH_COMPONENT24_OES: Set a 24bits depth buffer.
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, framebufferWidth, framebufferHeight);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
-		//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
-		
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            NSLog(@"Failed to make complete framebuffer object %x", glCheckFramebufferStatus(GL_FRAMEBUFFER));
-    }
-}
-
-- (void)deleteFramebuffer
-{
-    if (context)
-    {
-        [EAGLContext setCurrentContext:context];
-        
-        if (defaultFramebuffer)
-        {
-            glDeleteFramebuffers(1, &defaultFramebuffer);
-            defaultFramebuffer = 0;
-        }
-        
-        if (colorRenderbuffer)
-        {
-            glDeleteRenderbuffers(1, &colorRenderbuffer);
-            colorRenderbuffer = 0;
-        }
-		
-		
-		if( depthRenderbuffer )
-		{
-			glDeleteRenderbuffers(1, &depthRenderbuffer);
-			depthRenderbuffer = 0;
-		}
-    }
-}
-
-- (void)setFramebuffer
-{
-    if (context)
-    {
-        [EAGLContext setCurrentContext:context];
-        
-        if (!defaultFramebuffer)
-            [self createFramebuffer];
-        
-        glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
-    }
-}
-
-- (BOOL)presentFramebuffer
-{
-    BOOL success = FALSE;
+    [self destoryRenderAndFrameBuffer];
     
-    if (context)
-    {
-        [EAGLContext setCurrentContext:context];
-        
-        glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
-        
-        success = [context presentRenderbuffer:GL_RENDERBUFFER];
-    }
+    [self setupRenderBuffer];
+    [self setupFrameBuffer];
     
-    return success;
+    [self render];
 }
 
-- (void)layoutSubviews
-{
-    // The framebuffer will be re-created at the beginning of the next setFramebuffer method call.
-    [self deleteFramebuffer];
-}
-
-
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-	UITouch *touch;
-	CGPoint pos;
-	
-	for( touch in touches )
-	{
-		pos = [ touch locationInView:self ];
-		
-        GameApp::getAppInstance()->appToucheBegan(pos.x,
-                                                  pos.y,
-                                                  [ [ touches anyObject ] tapCount ] );
-	}
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
-	UITouch *touch;
-	CGPoint pos;
-	
-	for( touch in touches )
-	{
-		pos = [ touch locationInView:self ];
-		
-        GameApp::getAppInstance()->appToucheMoved(pos.x,
-                                                  pos.y,
-                                                  [ [ touches anyObject ] tapCount ] );
-	}
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
-	UITouch *touch;
-	CGPoint pos;
-	
-	for( touch in touches )
-	{
-		pos = [ touch locationInView:self ];
-		
-        GameApp::getAppInstance()->appToucheEnded(pos.x,
-                                                  pos.y,
-                                                  [ [ touches anyObject ] tapCount ] );
-	}	
-}
-
+/*
+ // Only override drawRect: if you perform custom drawing.
+ // An empty implementation adversely affects performance during animation.
+ - (void)drawRect:(CGRect)rect
+ {
+ // Drawing code
+ }
+ */
 
 @end

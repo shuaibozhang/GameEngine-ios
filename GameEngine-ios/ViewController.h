@@ -12,6 +12,17 @@
 @interface ViewController : UIViewController
 {
     EAGLContext *context;
+    
+    BOOL animating;
+    NSInteger animationFrameInterval;
+    CADisplayLink *displayLink;
 }
+
+@property (readonly, nonatomic, getter=isAnimating) BOOL animating;
+@property (nonatomic) NSInteger animationFrameInterval;
+
+- (void)startAnimation;
+- (void)stopAnimation;
+
 @end
 
