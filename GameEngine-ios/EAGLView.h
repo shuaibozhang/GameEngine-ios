@@ -12,9 +12,20 @@
 #include <OpenGLES/ES2/glext.h>
 
 @interface EAGLView : UIView {
-    CAEAGLLayer* _eaglLayer;
-    EAGLContext* _context;
-    GLuint _colorRenderBuffer;
-    GLuint _frameBuffer;
-}
+    @private
+        EAGLContext *context;
+        
+        // The pixel dimensions of the CAEAGLLayer.
+        GLint framebufferWidth;
+        GLint framebufferHeight;
+        
+        // The OpenGL ES names for the framebuffer and renderbuffer used to render to this view.
+        GLuint defaultFramebuffer, colorRenderbuffer, depthRenderbuffer;
+    }
+    
+    @property (nonatomic, retain) EAGLContext *context;
+    
+    - (void)setFramebuffer;
+    - (BOOL)presentFramebuffer;
+
 @end
