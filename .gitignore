@@ -1,0 +1,13 @@
+
+*.pdb
+*.obj
+*.obj
+*.log
+*.pdb
+*.exe
+*.log
+*.opendb
+GameEngine-windows/GameEngine-Windows/Project1/Debug/
+GameEngine-windows/GameEngine-Windows/Debug/
+GameEngine-windows/GameEngine-Windows/.vs/
+GameEngine-windows/GameEngine-Windows/GameEngine-Windows.VC.db
